@@ -10,12 +10,22 @@ from imblearn.over_sampling import SMOTE
 
 # Load data
 data = pd.read_csv('creditcard.csv')
+<<<<<<< HEAD
 
 # Separate features and target
 data = data.groupby('Class', group_keys=False).sample(frac=0.2, random_state=42)
 data = data.dropna(subset=["Class"])
 X = data.drop(columns=['Class'])
 y = data['Class']
+=======
+# Sample a smaller portion of the data to reduce runtime
+# Ensure we keep the class imbalance
+data_sampled = data.groupby('Class').apply(lambda x: x.sample(frac=0.25, random_state=42)).reset_index(drop=True)
+
+# Separate features and target
+X = data_sampled.drop(columns=['Class'])
+y = data_sampled['Class']
+>>>>>>> cf7aa6040be7f4d5edadf8b35fbb33acbe340006
 print(X.value_counts())
 print(y.value_counts())
 
@@ -35,6 +45,7 @@ X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, 
 smote = SMOTE(sampling_strategy = 0.2, random_state=42)
 X_train_resampled, y_train_resampled = smote.fit_resample(X_train, y_train)
 
+<<<<<<< HEAD
 # Logistic Regression model
 from sklearn.linear_model import LogisticRegression
 logistic_regression_model = LogisticRegression(solver='liblinear')
@@ -43,11 +54,25 @@ logistic_regression_model.fit(X_train_resampled, y_train_resampled)
 y_pred = logistic_regression_model.predict(X_test)
 
 # Evaluation for Logistic Regression
+=======
+# Train a RandomForest Classifier with class weights
+model = RandomForestClassifier(random_state=42, class_weight='balanced')
+model.fit(X_train_resampled, y_train_resampled)
+
+# Make predictions
+y_pred = model.predict(X_test)
+
+# Evaluate performance
+>>>>>>> cf7aa6040be7f4d5edadf8b35fbb33acbe340006
 accuracy = accuracy_score(y_test, y_pred)
 precision = precision_score(y_test, y_pred)
 recall = recall_score(y_test, y_pred)
 f1 = f1_score(y_test, y_pred)
+<<<<<<< HEAD
 roc_auc = roc_auc_score(y_test, logistic_regression_model.predict_proba(X_test)[:, 1])
+=======
+roc_auc = roc_auc_score(y_test, model.predict_proba(X_test)[:, 1])
+>>>>>>> cf7aa6040be7f4d5edadf8b35fbb33acbe340006
 
 print(f"Accuracy: {accuracy:.4f}")
 print(f"Precision: {precision:.4f}")
@@ -55,11 +80,19 @@ print(f"Recall: {recall:.4f}")
 print(f"F1-Score: {f1:.4f}")
 print(f"AUC-ROC: {roc_auc:.4f}")
 
+<<<<<<< HEAD
 # Visualization for logistic regression
 fig, ax = plt.subplots(1, 2, figsize=(12, 5))
 
 # Class Distribution Plot
 sns.countplot(x='Class', data=data, palette='Set2', ax=ax[0])
+=======
+# Visualization
+fig, ax = plt.subplots(1, 2, figsize=(12, 5))
+
+# Class Distribution Plot
+sns.countplot(x='Class', data=data_sampled, palette='Set2', ax=ax[0])
+>>>>>>> cf7aa6040be7f4d5edadf8b35fbb33acbe340006
 ax[0].set_title('Class Distribution (Sampled Dataset)')
 
 # Confusion Matrix Plot
@@ -71,6 +104,7 @@ ax[1].set_ylabel('Actual')
 
 plt.tight_layout()
 plt.show()
+<<<<<<< HEAD
 
 # ROC curve for logistic regression
 from sklearn.metrics import roc_curve
@@ -233,3 +267,5 @@ plt.title('ROC Curve')
 plt.legend()
 plt.grid(True)
 plt.show()
+=======
+>>>>>>> cf7aa6040be7f4d5edadf8b35fbb33acbe340006
